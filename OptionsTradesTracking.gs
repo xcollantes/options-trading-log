@@ -1,11 +1,11 @@
-// Funcitons for Google Sheets AppScript.
+// Scripts for Google Sheets AppScript.
 // https://github.com/xcollantes/options-trading-log
 
 /**
  * Press button to create snapshot of current gain and loss.  
  */
 function createSnapshot() {
-  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0]
+  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetName("overall metrics")
   const countNewRows = 1
   const positionNewRow = 13
 
@@ -28,4 +28,3 @@ function createSnapshot() {
     total_realized_gain, 
     total_realized_loss]])
 }
-
