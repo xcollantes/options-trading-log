@@ -1,9 +1,8 @@
-// Funcitons for Google Sheets AppScript.
+// Scripts for Google Sheets AppScript.
 // https://github.com/xcollantes/options-trading-log
 
 function getTransactionRow(sheet) {
   let range = sheet.getRange("3:3")
-  
   return range.getValues()[0]
 }
 
@@ -12,9 +11,20 @@ function getStockPrice(date, symbol) {
   console.log(response)
 }
 
+/**
+ * Format for date to be ouput in Sheet.
+ */
 function formatDate(inputDate) {
   const date = new Date(inputDate)
-  return `${String(date.getMonth() + 1).padStart(2, "0")}/${date.getDate()}/${date.getFullYear()}`
+  return `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${date.getFullYear()}`
+}
+
+/**
+ * Format for date in yyyy-mm-dd.   
+ */
+function yyyymmddFormat(inputDate) {
+  const date = new Date(inputDate)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
 }
 
 function formatPercent(inputAmount) {
@@ -40,14 +50,12 @@ function formatDollar(inputAmount) {
  * Create Google News link to remember what was happening in the market during 
  * the trade.
  */
-function createGoogleNewsLink() {
-  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0]
-  const outputCell = "A12"
+function createGoogleNewsLink(dataRow) {
+  const symbol = dataRow[0]
+  const startPositionDate = yyyymmddFormat(dataRow[2])
+  const endPositionDate = yyyymmddFormat(dataRow[3])
   
-
-  sheet.getRange(outputCell).setValue("hello")
-
-
+  return String(`https://www.google.com/search?q=after%3A${startPositionDate}+before%3A${endPositionDate}+what+happened+to+${symbol}+stock`)
 }
 
 /**
@@ -104,15 +112,30 @@ function createTemplate(dataRow) {
   `
 }
 
+/** 
+ * Set cell values for template.
+ */
 function outputTemplate(sheet, templateString) {
   sheet.getRange("A10").setValues([[templateString]])
-}  
+}
 
+/**
+ * Set cell for news context link.
+ */
+function outputNewsLink(sheet, linkValue) {
+  sheet.getRange("A12").setFormula(`=HYPERLINK("${linkValue}", "Google News link")`)
+}
+
+/** 
+ * Call as main function.
+ */
 function transformTemplate() {
-  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[2]
+  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("generate journal template")
 
-  transaction = getTransactionRow(sheet)
-  template = createTemplate(transaction)
+  const transaction = getTransactionRow(sheet)
+  const template = createTemplate(transaction)
+  const newsLink = createGoogleNewsLink(transaction)
 
   outputTemplate(sheet, template)
+  outputNewsLink(sheet, newsLink)
 }
