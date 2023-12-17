@@ -5,7 +5,7 @@
  * Press button to create snapshot of current gain and loss.  
  */
 function createSnapshot() {
-  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetName("overall metrics")
+  let sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("overall metrics")
   const countNewRows = 1
   const positionNewRow = 13
 
@@ -20,7 +20,7 @@ function createSnapshot() {
   total_realized_gain = sheet.getRange("B8").getValue()
   total_realized_loss = sheet.getRange("B9").getValue()
 
-  sheet.getRange("A" + positionNewRow + ":" + "D" +  positionNewRow).setValues([[
+  sheet.getRange("A" + positionNewRow + ":" + "F" +  positionNewRow).setValues([[
     date, 
     current_unrealized, 
     realized_net, 
